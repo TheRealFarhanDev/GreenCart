@@ -3,7 +3,7 @@ import { assets } from '../assets/assets'
 
 const MainBanner = () => {
   return (
-    <div className='relative'>
+    <div className='relative -z-1'>
       <img src={assets.main_banner_bg} alt="Banner Image" className='w-full hidden md:block' />
       <img src={assets.main_banner_bg_sm} alt="Mobile Banner Image" className='w-full md:hidden' />
       <div className='absolute inset-0 flex flex-col items-center justify-end md:items-start md:justify-center pb-24 md:pb-0 px-4 md:pl-18 lg:pl-24'>
