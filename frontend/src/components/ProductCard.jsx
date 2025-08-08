@@ -3,7 +3,7 @@ import { useAppContext } from "../context/AppContext";
 
 const ProductCard = ({ product }) => {
 
-    const { currency, cartItems, addToCart, UpdateCartitem, RemoveFromCart, navigate } = useAppContext();
+    const { currency, cartItems, addToCart, RemoveFromCart, navigate } = useAppContext();
 
     return product && (
         <div onClick={() => {

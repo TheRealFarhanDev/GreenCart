@@ -9,7 +9,7 @@ export const AppContext = createContext();
 export const AppContextProvider = ({ children }) => {
 
     const navigate = useNavigate();
-    const currency = import.meta.Vite_CURRENCY;
+    const currency = import.meta.env.VITE_CURRENCY;
     const [user, setUser] = useState(null);
     const [isSeller, setIsSeller] = useState(false);
     const [showUserLogin, setShowUserLogin] = useState(false)
@@ -47,9 +47,9 @@ export const AppContextProvider = ({ children }) => {
     //remove product from cart
     const RemoveFromCart = (itemId) => {
         let cartData = structuredClone(cartItems);
-        if(cartData[itemId]){
-            cartData[itemId]-=1;
-            if(cartData[itemId]===0){
+        if (cartData[itemId]) {
+            cartData[itemId] -= 1;
+            if (cartData[itemId] === 0) {
                 delete cartData[itemId]
             }
             toast.success("Removed from cart")
@@ -58,11 +58,33 @@ export const AppContextProvider = ({ children }) => {
 
     }
 
+    //get cart item count
+    const getCartItemCount = () => {
+        let totalCount = 0;
+        for (const item in cartItems) {
+            totalCount += cartItems[item];
+        }
+        return totalCount;
+    }
+
+    //get cart total
+    const getCartTotal = () => {
+        let total = 0;
+        for (const item in cartItems) {
+            const product = products.find((product) => product._id === item);
+            if(cartItems[item] > 0){
+                total += product.offerPrice * cartItems[item];
+            }
+        }
+        return Math.floor(total * 100) / 100;
+    }
+
+
     useEffect(() => {
         fecthProducts()
     }, [])
 
-    const value = { navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, UpdateCartitem, RemoveFromCart, cartItems, searchQuery, setSearchQuery }
+    const value = { navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, UpdateCartitem, RemoveFromCart, cartItems, searchQuery, setSearchQuery, getCartItemCount, getCartTotal }
 
     return <AppContext.Provider value={value}>
         {children}
