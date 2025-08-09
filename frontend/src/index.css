@@ -13,3 +13,7 @@
 .nav-li{
   @apply p-1.5 pl-3 hover:bg-primary/10 cursor-pointer;
 }
+
+.no-scrollbar::-webkit-scrollbar{
+  display: none;
+}
