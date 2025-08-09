@@ -1,33 +1,34 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets, dummyAddress } from "../assets/assets";
 
 const Cart = () => {
     const { getCartItemCount, getCartTotal, products, currency, cartItems, RemoveFromCart, UpdateCartitem, navigate } = useAppContext();
     const [cartArray, setCartArray] = useState([]);
-    const [addresses, setAddresses] = useState(dummyAddress);
+    const [addresses] = useState(dummyAddress);
     const [showAddress, setShowAddress] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(dummyAddress[0]);
     const [paymentOption, setPaymentOption] = useState("COD");
 
-    const getCartProducts = () => {
+    const getCartProducts = useCallback(() => {
         let tempArray = [];
         for (const key in cartItems) {
-            const product = products.find((item) => item._id === key);
+            const product = { ...products.find((item) => item._id === key) };
             product.quantity = cartItems[key];
             tempArray.push(product);
         }
         setCartArray(tempArray);
-    }
+    }, [cartItems, products]);
 
     const placeOrder = async () => {
 
     }
+
     useEffect(() => {
         if (products.length > 0 && cartItems) {
             getCartProducts();
         }
-    }, [products, cartItems])
+    }, [products, cartItems, getCartProducts]);
 
 
     return products.length > 0 && cartItems ? (
@@ -56,9 +57,10 @@ const Cart = () => {
                                     <div className='flex items-center'>
                                         <p>Qty:</p>
                                         <select onChange={(e) => UpdateCartitem(product._id, Number(e.target.value))} value={cartItems[product._id]} className='outline-none'>
-                                            {Array(cartItems[product._id] > 9 ? cartItems[product._id] : 9).fill('').map((_, index) => (
-                                                <option key={index} value={index + 1}>{index + 1}</option>
-                                            ))}
+                                            {Array.from({ length: cartItems[product._id] > 9 ? cartItems[product._id] : 9 }, (_, i) => i + 1)
+                                                .fill('').map((_, index) => (
+                                                    <option key={index} value={index + 1}>{index + 1}</option>
+                                                ))}
                                         </select>
                                     </div>
                                 </div>
