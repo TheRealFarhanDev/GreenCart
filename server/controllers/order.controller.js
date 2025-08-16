@@ -142,7 +142,7 @@ export const webhooks = async (req, res) => {
 
     //Handle Event
     switch (event.type) {
-        case "payment_intent.succeeded":{
+        case "payment_intent.succeeded": {
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
 
@@ -158,12 +158,12 @@ export const webhooks = async (req, res) => {
                 isPaid: true,
             })
             //Clear the cart item
-            await User.findOneAndUpdate(userId, {
+            await User.findByIdAndUpdate(userId, {
                 cartItems: {},
-            })
+            });
             break;
         }
-        case 'payment_intent.payment_failed':{
+        case 'payment_intent.payment_failed': {
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
 
@@ -175,7 +175,7 @@ export const webhooks = async (req, res) => {
             await Order.findByIdAndDelete(orderId);
             break;
         }
-    
+
         default:
             console.error(`Unhandled event type: ${event.type}`);
             break;
