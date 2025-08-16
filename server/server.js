@@ -24,8 +24,6 @@ await connectCloudinary();
 const allowedOrigins = [
     "http://localhost:5173",
     "https://greencart-frontend-blond.vercel.app",
-    "https://greencart-frontend-git-main-mohammed-farhans-projects.vercel.app",
-    "https://greencart-frontend-if1ya90vm-mohammed-farhans-projects.vercel.app"
 ];
 
 app.use(cors({

@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { dummyProducts } from "../assets/assets";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -8,6 +7,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
+const location = useLocation();
 
 export const AppContext = createContext();
 
@@ -135,7 +135,7 @@ export const AppContextProvider = ({ children }) => {
         }
 
         fetchProducts()
-    }, [])
+    }, [location.pathname])
 
     //update database cart items
     useEffect(() => {

@@ -30,7 +30,7 @@ const Navbar = () => {
     }, [searchQuery, navigate])
 
     return (
-        <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
+        <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative z-20 transition-all">
 
             <NavLink to='/' onClick={() => setOpen(false)}>
                 <img src={assets.logo} alt="Logo" />
@@ -38,9 +38,22 @@ const Navbar = () => {
 
             {/* Desktop Menu */}
             <div className="hidden sm:flex items-center gap-8">
-                <NavLink to="/" >Home</NavLink>
-                <NavLink to="/products" >All Products</NavLink>
-                <NavLink to="/" >Contact</NavLink>
+                <NavLink to="/seller" className='px-4 py-1.5 border-primary hover:bg-primary/30 hover:rounded-lg transition duration-300 rounded-full border-1' >Seller Dashboard</NavLink>
+                <NavLink
+                    to="/"
+                    className="relative px-2 py-1 group"
+                >
+                    Home
+                    <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+
+                <NavLink
+                    to="/products"
+                    className="relative px-2 py-1 group"
+                >
+                    All Products
+                    <span className="absolute right-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
 
                 <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
                     <input onChange={(e) => setSearchQuery(e.target.value)} className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
@@ -85,7 +98,7 @@ const Navbar = () => {
 
                 {user && <NavLink to="/orders" onClick={() => setOpen(false)}>My Orders</NavLink>}
 
-                <NavLink to="/" onClick={() => setOpen(false)}>Contact</NavLink>
+                <NavLink to="/seller" onClick={() => setOpen(false)}>Seller Dashboard</NavLink>
 
                 {!user ? (
                     <button onClick={() => {
