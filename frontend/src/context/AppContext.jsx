@@ -7,13 +7,12 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
-const location = useLocation();
-
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const currency = import.meta.env.VITE_CURRENCY;
     const [user, setUser] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
