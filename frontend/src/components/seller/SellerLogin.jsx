@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../context/AppContext'
+import toast from 'react-hot-toast';
 
 const SellerLogin = () => {
-    const { isSeller, setIsSeller, navigate } = useAppContext();
+    const { isSeller, setIsSeller, navigate, axios } = useAppContext();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -14,8 +15,19 @@ const SellerLogin = () => {
     }, [isSeller, navigate])
 
     const onSubmitHandler = async (e) => {
-        e.preventDefault();
-        setIsSeller(true);
+        try {
+            e.preventDefault();
+            const { data } = await axios.post('/api/seller/login', { email, password });
+            if(data.success){
+                setIsSeller(true);
+                navigate("/seller");
+            }else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+
     }
     return !isSeller && (
         <form onSubmit={onSubmitHandler} className="min-h-screen flex items-center text-sm text-gray-600">
@@ -30,7 +42,7 @@ const SellerLogin = () => {
                 </div>
                 <div className="w-full ">
                     <p>Password</p>
-                    <input onChange={(e) => setPassword(e.target.value)} value={password} placeholder="enter your password" className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary" type="password" required />
+                    <input onChange={(e) => setPassword(e.target.value)} value={password} placeholder="Enter your password" className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary" type="password" required />
                 </div>
                 <button className="bg-primary hover:bg-primary-dull transition-all text-white w-full py-2 rounded cursor-pointer">
                     Login

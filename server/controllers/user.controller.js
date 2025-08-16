@@ -8,7 +8,7 @@ export const registerUser = async (req, res) => {
         const {name, email, password} = req.body;
         if(!name || !email || !password){
             return res.json({
-                sucess: false,
+                success: false,
                 message: "Please fill all the fields",
             })
         }
@@ -16,7 +16,7 @@ export const registerUser = async (req, res) => {
 
         if(existingUser){
             return res.json({
-                sucess: false,
+                success: false,
                 message: "User already exists",
             })
         }
@@ -39,7 +39,8 @@ export const registerUser = async (req, res) => {
         })
 
         return res.json({
-            sucess: true,
+            success: true,
+            message: "User Registered Successfully",
             user:{
                 name: user.name,
                 email: user.email
@@ -48,7 +49,7 @@ export const registerUser = async (req, res) => {
     } catch (error) {
         console.log(error.message);
         return res.json({
-            sucess: false,
+            success: false,
             message: error.message
         })
     }
@@ -61,7 +62,7 @@ export const loginUser = async (req, res) => {
 
         if(!email || !password){
             return res.json({
-                sucess: false,
+                success: false,
                 message: "Email and Password are required",
             })
         }
@@ -94,7 +95,8 @@ export const loginUser = async (req, res) => {
         })
 
         return res.json({
-            sucess: true,
+            success: true,
+            message: "User Logged In Successfully",
             user:{
                 name: user.name,
                 email: user.email
@@ -103,7 +105,7 @@ export const loginUser = async (req, res) => {
     } catch (error) {
         console.log(error.message);
         return res.json({
-            sucess: false,
+            success: false,
             message: error.message
         })
     
@@ -146,7 +148,7 @@ export const logoutUser = async (req, res) => {
     } catch (error) {
         console.log(error.message);
         return res.json({
-            sucess: false,
+            success: false,
             message: error.message
         })
     }

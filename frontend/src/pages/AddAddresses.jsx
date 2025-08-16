@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext'
+import toast from 'react-hot-toast'
 
 
 const InputField = ({ type, placeholder, name, onChange, address }) => {
@@ -17,21 +19,39 @@ const InputField = ({ type, placeholder, name, onChange, address }) => {
 }
 
 const AddAddresses = () => {
+    const { axios, user, navigate, loadingUser } = useAppContext();
     const [address, setAddress] = useState({
-        firstname: "",
-        lastname: "",
+        firstName: "",
+        lastName: "",
         email: "",
         street: "",
         city: "",
         state: "",
-        zipcode: "",
+        zipCode: "",
         country: "",
         phone: ""
     })
 
-    const onSubmitHandler = (e) => {
+    const onSubmitHandler = async (e) => {
         e.preventDefault();
+        try {
+            const { data } = await axios.post('/api/address/add', { address });
+            if (data.success) {
+                toast.success(data.message);
+                navigate("/cart");
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
+
+    useEffect(()=>{
+        if(!loadingUser && !user){
+            navigate("/");
+        }
+    },[navigate, user, loadingUser])
 
     const handleChange = (e) => {
         setAddress({ ...address, [e.target.name]: e.target.value })
@@ -47,15 +67,15 @@ const AddAddresses = () => {
                     <div className='grid grid-cols-2 gap-3'>
                         <InputField
                             type="text"
-                            placeholder="FirstName"
-                            name="firstname"
+                            placeholder="First Name"
+                            name="firstName"
                             onChange={handleChange}
                             address={address}
                         />
                         <InputField
                             type="text"
                             placeholder="LastName"
-                            name="lastname"
+                            name="lastName"
                             onChange={handleChange}
                             address={address}
                         />
@@ -97,7 +117,7 @@ const AddAddresses = () => {
                         <InputField
                             type="text"
                             placeholder="ZipCode"
-                            name="zipcode"
+                            name="zipCode"
                             onChange={handleChange}
                             address={address}
                         />

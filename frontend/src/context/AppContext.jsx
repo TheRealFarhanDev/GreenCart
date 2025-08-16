@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+
 
 export const AppContext = createContext();
 
@@ -11,6 +16,7 @@ export const AppContextProvider = ({ children }) => {
     const navigate = useNavigate();
     const currency = import.meta.env.VITE_CURRENCY;
     const [user, setUser] = useState(null);
+    const [loadingUser, setLoadingUser] = useState(true);
     const [isSeller, setIsSeller] = useState(false);
     const [showUserLogin, setShowUserLogin] = useState(false)
 
@@ -18,9 +24,50 @@ export const AppContextProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState({})
     const [searchQuery, setSearchQuery] = useState("");
 
+    //fetch seller status
+    const fetchSeller = async () => {
+        try {
+            const { data } = await axios.get('/api/seller/is-auth');
+            if (data.success) {
+                setIsSeller(true);
+            } else {
+                setIsSeller(false);
+            }
+        } catch (error) {
+            setIsSeller(false);
+        }
+    }
+
+    //fetch user auth status, user data and cart items
+    const fetchUser = async () => {
+        try {
+            const { data } = await axios.get('/api/user/is-auth');
+            if (data.success) {
+                setUser(data.user);
+                setCartItems(data.user.cartItems);
+            } else {
+                setUser(null);
+            }
+        } catch {
+            setUser(null);
+        } finally {
+            setLoadingUser(false);
+        }
+    }
+
+
     //fetch all product
-    const fecthProducts = async () => {
-        setProducts(dummyProducts);
+    const fetchProducts = async () => {
+        try {
+            const { data } = await axios.get('/api/product/list');
+            if (data.success) {
+                setProducts(data.products);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     //Add Product to Cart
@@ -72,7 +119,7 @@ export const AppContextProvider = ({ children }) => {
         let total = 0;
         for (const item in cartItems) {
             const product = products.find((product) => product._id === item);
-            if(cartItems[item] > 0){
+            if (cartItems[item] > 0) {
                 total += product.offerPrice * cartItems[item];
             }
         }
@@ -81,10 +128,34 @@ export const AppContextProvider = ({ children }) => {
 
 
     useEffect(() => {
-        fecthProducts()
+        fetchUser();
+
+        if (window.location.pathname.startsWith('/seller')) {
+            fetchSeller();
+        }
+
+        fetchProducts()
     }, [])
 
-    const value = { navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, UpdateCartitem, RemoveFromCart, cartItems, searchQuery, setSearchQuery, getCartItemCount, getCartTotal }
+    //update database cart items
+    useEffect(() => {
+        const updateCart = async () => {
+            try {
+                const { data } = await axios.post('/api/cart/update', { cartItems })
+                if (!data.success) {
+                    toast.error(data.message);
+                }
+            } catch (error) {
+                toast.error(error.message);
+            }
+        }
+
+        if (user) {
+            updateCart();
+        }
+    }, [cartItems, user])
+
+    const value = { navigate, user, setUser, isSeller, setIsSeller, showUserLogin, setShowUserLogin, products, currency, addToCart, UpdateCartitem, RemoveFromCart, cartItems, searchQuery, setSearchQuery, getCartItemCount, getCartTotal, axios, fetchProducts, loadingUser, setLoadingUser, setCartItems }
 
     return <AppContext.Provider value={value}>
         {children}

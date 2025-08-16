@@ -10,6 +10,7 @@ import productRouter from "./routes/product.route.js";
 import cartRouter from "./routes/cart.route.js";
 import addressRouter from "./routes/address.route.js";
 import orderRouter from "./routes/order.route.js";
+import { webhooks } from "./controllers/order.controller.js";
 dotenv.config();
 
 const app = express();
@@ -21,6 +22,8 @@ await connectCloudinary();
 
 //Allow Multiple Origins
 const allowedOrigins = ["http://localhost:5173"];
+
+app.post('/stripe', express.raw({ type: 'application/json' }), webhooks)
 
 //Middleware Configuration
 app.use(express.json());

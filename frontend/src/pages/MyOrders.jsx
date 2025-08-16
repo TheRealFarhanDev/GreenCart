@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { dummyOrders } from '../assets/assets';
 import { useAppContext } from '../context/AppContext';
 
 const MyOrders = () => {
-    const { currency } = useAppContext();
+    const { currency, axios, user, loadingUser } = useAppContext();
     const [orders, setOrders] = useState([]);
+
     const fetchOrders = async () => {
-        setOrders(dummyOrders);
+        try {
+            const { data } = await axios.get('/api/order/user');
+            if (data.success) {
+                setOrders([...data.orders]);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
     }
+
+
+
     useEffect(() => {
-        fetchOrders();
-    }, [])
+        if (!loadingUser && user) {
+            fetchOrders()
+        };
+    }, [user, loadingUser])
 
     return (
         <div className='mt-16 pb-16'>
@@ -27,10 +39,10 @@ const MyOrders = () => {
                         <span>Total Amount : {currency}{order.amount}</span>
                     </p>
                     {order.items.map((item, index) => (
-                        <div key={index} className={`${order.items.length !== index+1 && "border-b"} border-gray-300 relative bg-white text-gray-500/70 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 md:gap-16 w-full max-w-4xl`}>
+                        <div key={index} className={`${order.items.length !== index + 1 && "border-b"} border-gray-300 relative bg-white text-gray-500/70 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 md:gap-16 w-full max-w-4xl`}>
                             <div className='flex items-center mb-4 md:mb-0'>
                                 <div className='bg-primary/10 p-4 rounded-lg'>
-                                    <img src={item.product.image[0]} alt="Product Image" className='size-16' />
+                                    <img src={item.product.images[0]} alt="Product Image" className='size-16' />
                                 </div>
                                 <div className='ml-4'>
                                     <h2>{item.product.name}</h2>

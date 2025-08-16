@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { assets, dummyAddress } from "../assets/assets";
+import { assets } from "../assets/assets";
+import toast from "react-hot-toast";
 
 const Cart = () => {
-    const { getCartItemCount, getCartTotal, products, currency, cartItems, RemoveFromCart, UpdateCartitem, navigate } = useAppContext();
+    const { getCartItemCount, getCartTotal, products, currency, cartItems, RemoveFromCart, UpdateCartitem, navigate, axios, user, setCartItems } = useAppContext();
     const [cartArray, setCartArray] = useState([]);
-    const [addresses] = useState(dummyAddress);
+    const [addresses, setAddresses] = useState([]);
     const [showAddress, setShowAddress] = useState(false);
-    const [selectedAddress, setSelectedAddress] = useState(dummyAddress[0]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
     const [paymentOption, setPaymentOption] = useState("COD");
 
     const getCartProducts = useCallback(() => {
@@ -20,8 +21,64 @@ const Cart = () => {
         setCartArray(tempArray);
     }, [cartItems, products]);
 
-    const placeOrder = async () => {
+    const getUserAddress = async () => {
+        try {
+            const { data } = await axios.get('/api/address/list');
+            if (data.success) {
+                setAddresses(data.addresses);
+                if (data.addresses.length > 0) {
+                    setSelectedAddress(data.addresses[0]);
+                }
+            }
+            else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
+    const placeOrder = async () => {
+        try {
+            if (!selectedAddress) {
+                return toast.error("Please select an address");
+            }
+            //Place order with COD
+            if (paymentOption === "COD") {
+                const { data } = await axios.post('/api/order/cod', {
+                    userId: user._id,
+                    items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id,
+
+                })
+
+                if (data.success) {
+                    toast.success(data.message);
+                    setCartItems({});
+                    navigate("/orders");
+                } else {
+                    toast.error(data.message);
+                }
+            } else {
+                //place order with stripe
+                const { data } = await axios.post('/api/order/stripe', {
+                    userId: user._id,
+                    items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id,
+
+                })
+
+                if (data.success) {
+                    window.location.replace(data.url)
+                } else {
+                    toast.error(data.message);
+                }
+            }
+
+
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
@@ -29,6 +86,13 @@ const Cart = () => {
             getCartProducts();
         }
     }, [products, cartItems, getCartProducts]);
+
+    useEffect(() => {
+        if (user) {
+            getUserAddress();
+        }
+    }, [user])
+
 
 
     return products.length > 0 && cartItems ? (
@@ -48,7 +112,7 @@ const Cart = () => {
                     <div key={index} className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base font-medium pt-3">
                         <div className="flex items-center md:gap-6 gap-3">
                             <div onClick={() => { navigate(`/products/${product.category.toLowerCase()}/${product._id}`); scrollTo(0, 0) }} className="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded overflow-hidden">
-                                <img className="max-w-full h-full object-cover" src={product.image[0]} alt={product.name} />
+                                <img className="max-w-full h-full object-cover" src={product.images[0]} alt={product.name} />
                             </div>
                             <div>
                                 <p className="hidden md:block font-semibold">{product.name}</p>

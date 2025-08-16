@@ -75,7 +75,7 @@ export const sellerLogout = async (req, res) => {
     } catch (error) {
         console.log(error.message);
         return res.json({
-            sucess: false,
+            success: false,
             message: error.message
         })
     }

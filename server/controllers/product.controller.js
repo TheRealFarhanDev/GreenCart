@@ -18,13 +18,13 @@ export const addProduct = async (req, res) => {
 
         await Product.create({ ...productData, images: imgUrl })
 
-        res.json({
+        return res.json({
             success: true,
             message: "Product Added Successfully",
         })
     } catch (error) {
         console.log(error.message);
-        res.json({
+        return res.json({
             success: false,
             message: error.message
         })
@@ -72,8 +72,8 @@ export const productById = async (req, res) => {
 //Change Product isStock -> /api/product/stock
 export const changeStock = async (req, res) => {
     try {
-        const { id, isStock } = req.body;
-        const product = await Product.findByIdAndUpdate(id, { isStock }, { new: true });
+        const { id, inStock } = req.body;
+        const product = await Product.findByIdAndUpdate(id, { inStock }, { new: true });
         res.json({
             success: true,
             message: "Product Stock Changed Successfully",
