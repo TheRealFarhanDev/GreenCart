@@ -21,7 +21,13 @@ await connectCloudinary();
 
 
 //Allow Multiple Origins
-const allowedOrigins = ["http://localhost:5173", "https://greencart-frontend-blond.vercel.app"];
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://greencart-frontend-blond.vercel.app",
+    "https://greencart-frontend-git-main-mohammed-farhans-projects.vercel.app",
+    "https://greencart-frontend-if1ya90vm-mohammed-farhans-projects.vercel.app"
+];
+
 app.use(cors({
     origin: allowedOrigins,
     credentials: true,
@@ -33,7 +39,7 @@ app.post('/stripe', express.raw({ type: 'application/json' }), webhooks)
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/", (req, res)=>{
+app.get("/", (req, res) => {
     res.send("API is Working!");
 })
 
@@ -44,6 +50,6 @@ app.use('/api/cart', cartRouter)
 app.use('/api/address', addressRouter)
 app.use('/api/order', orderRouter)
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
 })
